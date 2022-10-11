@@ -1,0 +1,12 @@
+version: '3.8'
+
+services: 
+  db: 
+    image: "postgres"
+    restart: "always"
+    ports:
+      - 5432:5432
+    environment: 
+      POSTGRES_PASSWORD: "12345"
+      POSTGRES_USER: "Leandro"
+      POSTGRES_DB: "sequelize_tut"
