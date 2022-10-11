@@ -1,7 +1,7 @@
 const Sequelize = require('sequelize');
 const dbConfig = require('../config/database');
 
-const User = require('../models/User');
+import { User } from '../models/User'
 const Address = require('../models/Address');
 const Tech = require('../models/Tech');
 
