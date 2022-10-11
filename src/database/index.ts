@@ -3,7 +3,7 @@ const dbConfig = require('../config/database');
 
 import { User } from '../models/User'
 const Address = require('../models/Address');
-const Tech = require('../models/Tech');
+import { Tech } from '../models/Tech'
 
 
 const connection = new Sequelize(dbConfig);
