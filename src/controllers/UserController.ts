@@ -34,13 +34,14 @@ module.exports = {
   }, */
 
   async userUpdateName(req: any, res: any) {
-    const { name } = req.body;
+    const { name, email } = req.body;
     const { user_id } = req.params;
 
     const user = await User.findByPk(user_id)
     
     user.update({
-      name: name
+      name: name,
+      email: email
     })
     return res.status(200).json(user)
   },
