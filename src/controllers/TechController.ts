@@ -3,7 +3,7 @@ const User = require('../models/User')
 
 
 module.exports = {
-  async index(req, res) {
+  async index(req: any, res: any) {
     const { user_id } = req.params;
 
     const user = await User.findByPk(user_id, {
@@ -23,7 +23,7 @@ module.exports = {
   },
 
 
-  async store(req, res) {
+  async store(req: any, res: any) {
     const { user_id } = req.params;
     const { name } = req.body;
 
@@ -42,7 +42,7 @@ module.exports = {
     return res.json(tech);
   },
 
-  async delete(req, res) {
+  async delete(req: any, res: any) {
     const { user_id } = req.params;
     const { name } = req.body;
 
