@@ -23,14 +23,26 @@ module.exports = {
 
     return res.json(user);
   },
-  
-  async userUpdateName(req: any, res: any) {
+
+/*   async userUpdateName(req: any, res: any) {
     const { name } = req.body;
     const { user_id } = req.params;
     const user = await User.findByPk(user_id)
     user.name = name;
     await user.save();
     return res.json(user);
+  }, */
+
+  async userUpdateName(req: any, res: any) {
+    const { name } = req.body;
+    const { user_id } = req.params;
+
+    const user = await User.findByPk(user_id)
+    
+    user.update({
+      name: name
+    })
+    return res.status(200).json(user)
   },
 };
 
