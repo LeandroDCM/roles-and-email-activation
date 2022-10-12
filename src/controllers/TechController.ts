@@ -1,5 +1,5 @@
-const Tech = require('../models/Tech')
-const User = require('../models/User')
+import {Tech} from '../models/Tech';
+import {User} from '../models/User';
 
 
 module.exports = {

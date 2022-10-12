@@ -1,8 +1,8 @@
 const Address = require('../models/Address')
-const User = require('../models/User')
+import {User} from '../models/User';
 
 module.exports = {
-  async index(req, res) {
+  async index(req: any, res: any) {
     const { user_id } = req.params;
 
     const user = await User.findByPk(user_id, {
@@ -13,7 +13,7 @@ module.exports = {
   },
 
 
-  async store(req, res) {
+  async store(req: any, res: any) {
     const { user_id } = req.params;
     const { zipcode, street, number } = req.body;
 

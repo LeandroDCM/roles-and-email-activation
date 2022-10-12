@@ -1,9 +1,9 @@
 const { Op } = require('sequelize');
-const User = require('../models/User');
+import {User} from '../models/User';
 
 
 module.exports = {
-  async show(req, res) {
+  async show(req: any, res: any) {
     //Find every user that has an email that ends in @rocketseat
     //From these users i want to find everyone that lives in street: Rua Guilherme Gembala
     //From them i want to search the techs that start with React
