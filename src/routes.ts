@@ -15,6 +15,7 @@ routes.post('/users', UserController.store)
 
 routes.get('/users/:user_id', UserController.user)
 routes.put('/users/:user_id', UserController.userUpdateName)
+routes.delete('/users/:user_id', UserController.delete)
 
 routes.get('/users/:user_id/addresses', AddressController.index)
 routes.post('/users/:user_id/addresses', AddressController.store)
