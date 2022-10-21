@@ -1,17 +1,24 @@
-'use strict';
+"use strict";
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
-  async up (queryInterface, Sequelize) {
-    return queryInterface.createTable('techs', {
+  async up(queryInterface, Sequelize) {
+    return queryInterface.createTable("posts", {
       id: {
         type: Sequelize.INTEGER,
         primaryKey: true,
         autoIncrement: true,
         allowNull: false,
       },
-      name: {
+      user_id: {
         type: Sequelize.INTEGER,
+        allowNull: false,
+        references: { model: "users", key: "id" },
+        onUpdate: "CASCADE",
+        onDelete: "CASCADE",
+      },
+      post: {
+        type: Sequelize.STRING,
         allowNull: false,
       },
       created_at: {
@@ -22,11 +29,10 @@ module.exports = {
         type: Sequelize.DATE,
         allowNull: false,
       },
-      });
-
+    });
   },
 
-  async down (queryInterface, Sequelize) {
-    return queryInterface.dropTable('techs');
-  }
+  async down(queryInterface, Sequelize) {
+    return queryInterface.dropTable("posts");
+  },
 };
