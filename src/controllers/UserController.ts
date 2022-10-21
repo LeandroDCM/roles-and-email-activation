@@ -1,6 +1,8 @@
 import { User } from "../models/User";
 import hasErrors from "../utils/paramsValidator";
-
+import validPassword from "../utils/validPassword";
+import { Op } from "sequelize";
+import bcrypt from "bcrypt";
 class UserController {
   async register(req: any, res: any) {
     const { username, name, email, password, confirmPassword } = req.body;
@@ -25,6 +27,41 @@ class UserController {
       return res
         .status(422) //join and return them
         .json({ msg: `Fields: ${errors.join(",")} are required!` });
+    }
+
+    //validations
+    const isPasswordInvalid = validPassword(password, confirmPassword);
+    if (isPasswordInvalid)
+      return res.status(422).json({ msg: isPasswordInvalid });
+
+    //check if user exists
+    const userExists = await User.findOne({
+      where: {
+        [Op.or]: [
+          {
+            username: username,
+          },
+          {
+            email: email,
+          },
+        ],
+      },
+    });
+
+    if (userExists) {
+      return res.status(422).json({ msg: "Email or username already in use!" });
+    }
+
+    try {
+      res.status(201).json({
+        msg: "User created successfully",
+      });
+    } catch (error) {
+      console.log(error);
+
+      res.status(500).json({
+        msg: "Error ocurred in server, try again later!",
+      });
     }
   }
 }
