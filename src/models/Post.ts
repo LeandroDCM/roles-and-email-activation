@@ -4,9 +4,7 @@ class Post extends Model {
   static init(sequelize: any) {
     super.init(
       {
-        zipcode: DataTypes.STRING,
-        street: DataTypes.STRING,
-        number: DataTypes.INTEGER,
+        post: DataTypes.STRING,
       },
       {
         sequelize,
