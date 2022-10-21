@@ -52,13 +52,26 @@ class UserController {
       return res.status(422).json({ msg: "Email or username already in use!" });
     }
 
+    // create password
+    const salt = await bcrypt.genSalt(12);
+    const passwordHash = await bcrypt.hash(password, salt);
+
+    console.log(passwordHash);
     try {
+      //create user
+      const user = await User.create({
+        username: username,
+        name: name,
+        email: email,
+        password: passwordHash,
+      });
+
       res.status(201).json({
         msg: "User created successfully",
       });
     } catch (error) {
       console.log(error);
-
+      console.log(passwordHash);
       res.status(500).json({
         msg: "Error ocurred in server, try again later!",
       });
