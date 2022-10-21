@@ -19,4 +19,7 @@ routes.post("/auth/login", UserController.login);
 // Recover User Route
 routes.put("/auth/recover", EmailController.recover);
 
+// Reset Password
+routes.patch("/auth/reset/:token", UserController.reset);
+
 export { routes };

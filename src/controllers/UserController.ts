@@ -4,6 +4,7 @@ import validPassword from "../utils/validPassword";
 import { Op } from "sequelize";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import "dotenv/config";
 class UserController {
   async register(req: any, res: any) {
     const { username, name, email, password, confirmPassword } = req.body;
@@ -112,7 +113,6 @@ class UserController {
 
     // check if password match
     const checkPassword = await bcrypt.compare(password, user.password);
-
     if (!checkPassword) {
       return res.status(422).json({ msg: "Invalid password!" });
     }
@@ -137,6 +137,58 @@ class UserController {
 
       res.status(500).json({
         msg: "Error ocurred in server, try again later!",
+      });
+    }
+  }
+
+  async reset(req: any, res: any) {
+    const { newPassword, confirmNewPass, username } = req.body;
+    //token came from recovery email
+    const { token } = req.params;
+
+    //checking password regex
+    const isPasswordInvalid = validPassword(newPassword, confirmNewPass);
+    if (isPasswordInvalid)
+      return res.status(422).json({ msg: isPasswordInvalid });
+
+    if (!newPassword || !confirmNewPass) {
+      return res.status(422).json({ msg: "Password is required!" });
+    }
+
+    try {
+      const secret = process.env.JWT_SECRET as string;
+      //grab username from token passed through email
+      const usernameToken = jwt.verify(token, secret) as any;
+
+      //compares username grabbed from inside the email of the user
+      //with the username provided by the user in the time of password changing
+      if (username !== usernameToken.username) {
+        return res.json({
+          Error: "User not found!",
+        });
+      }
+      const salt = await bcrypt.genSalt(12);
+      const passwordHash = await bcrypt.hash(newPassword, salt);
+
+      //finds user from the token that he got from email
+      await User.update(
+        {
+          password: passwordHash,
+        },
+        {
+          where: {
+            username: usernameToken.username,
+          },
+        }
+      );
+
+      return res.json({
+        msg: "New password created successfully",
+      });
+    } catch (error) {
+      console.log(error);
+      return res.json({
+        msg: "Invalid token",
       });
     }
   }
