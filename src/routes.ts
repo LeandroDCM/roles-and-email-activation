@@ -12,4 +12,7 @@ routes.get("/", (req: any, res: any) => {
 // Register User Route
 routes.post("/auth/register", UserController.register);
 
+// Login User Route
+routes.post("/auth/login", UserController.login);
+
 export { routes };
