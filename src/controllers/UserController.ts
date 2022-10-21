@@ -1,62 +1,32 @@
-import {User} from '../models/User';
+import { User } from "../models/User";
+import hasErrors from "../utils/paramsValidator";
 
+class UserController {
+  async register(req: any, res: any) {
+    const { username, name, email, password, confirmPassword } = req.body;
 
-module.exports = {
-  async index(req: any, res: any) {
-    const users = await User.findAll();
-    return res.json(users)
-  },
+    //verify if there are empty fields
+    const requestFields = [
+      "username",
+      "name",
+      "email",
+      "password",
+      "confirmPassword",
+    ];
 
-
-  async store(req: any, res: any) {
-    const { name , email } = req.body;
-
-    const user = await User.create({ name, email});
-
-    return res.json(user);
-  },
-
-  async user(req: any, res: any) {
-    const { user_id } = req.params;
-
-    const user = await User.findByPk(user_id)
-
-    if (!user) {
-      return res.status(400).json({ error: 'User not found'});
+    const errors = hasErrors(requestFields, req.body);
+    if (errors.length === 1) {
+      //if one error exist
+      return res
+        .status(422) //join and return them
+        .json({ msg: `Field: ${errors[0]} is required` });
+    } else if (errors.length > 1) {
+      //if errors exist
+      return res
+        .status(422) //join and return them
+        .json({ msg: `Fields: ${errors.join(",")} are required!` });
     }
-
-    return res.json(user);
-  },
-
-  async userUpdateName(req: any, res: any) {
-    const { name, email } = req.body;
-    const { user_id } = req.params;
-
-    const user = await User.findByPk(user_id)
-    
-    if (!user) {
-      return res.status(400).json({ error: 'User not found'});
-    }
-
-    user.update({
-      name: name,
-      email: email
-    })
-    return res.status(200).json(user)
-  },
-
-  async delete(req: any, res: any) {
-    const { user_id } = req.params;
-
-    const user = await User.findByPk(user_id)
-
-    if (!user) {
-      return res.status(400).json({ error: 'User not found'});
-    }
-
-    user.destroy()
-
-    return res.status(200).json({ Success: 'User DELETED'});
   }
-};
+}
 
+export default new UserController();

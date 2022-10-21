@@ -1,31 +1,15 @@
-const express = require('express');
-const UserController = require('./controllers/UserController');
-const AddressController = require('./controllers/AddressController');
-const TechController = require('./controllers/TechController')
-const ReportController = require('./controllers/ReportController');
-
+const express = require("express");
 const routes = express.Router();
 
-routes.get('/', (req: any, res: any) => {
-  return res.json({hello: 'world'})
-})
+//Controllers
+import UserController from "./controllers/UserController";
 
-routes.get('/users', UserController.index)
-routes.post('/users', UserController.store)
+// Public Routes
+routes.get("/", (req: any, res: any) => {
+  return res.json({ hello: "world" });
+});
 
-routes.get('/users/:user_id', UserController.user)
-routes.put('/users/:user_id', UserController.userUpdateName)
-routes.delete('/users/:user_id', UserController.delete)
-
-routes.get('/users/:user_id/addresses', AddressController.index)
-routes.post('/users/:user_id/addresses', AddressController.store)
-routes.put('/users/:user_id/addresses', AddressController.update)
-
-
-routes.get('/users/:user_id/techs', TechController.index);
-routes.post('/users/:user_id/techs', TechController.store);
-routes.delete('/users/:user_id/techs', TechController.delete);
-
-routes.get('/reports', ReportController.show)
+// Register User Route
+routes.post("/auth/register", UserController.register);
 
 export { routes };
