@@ -29,8 +29,8 @@ routes.patch("/auth/reset/:token", UserController.reset);
 routes.get("/user/", checkToken, UserController.userIndex);
 
 // get/update/delete post route
-//routes.get("/posts/", checkToken, PostController.index);
-//routes.get("/posts/:id", checkToken, PostController.userPosts);
+routes.get("/posts/", checkToken, PostController.postsIndex);
+routes.get("/posts/:id", checkToken, PostController.userPosts);
 routes.post("/user/post", checkToken, PostController.makePost);
 routes.patch("/user/:postid", checkToken, PostController.updatePost);
 routes.delete("/user/:postid", checkToken, PostController.deletePost);

@@ -140,6 +140,47 @@ class PostController {
       });
     }
   }
+
+  async postsIndex(req: any, res: any) {
+    try {
+      const posts = await Post.findAll({
+        attributes: ["post", "user_id"],
+      });
+      res.json(posts);
+    } catch (error) {
+      res.status(500).send(error);
+    }
+  }
+
+  async userPosts(req: any, res: any) {
+    try {
+      const id = req.params.id;
+
+      const testId = idIsValid(id);
+      if (testId) {
+        return testId;
+      }
+
+      const posts = await Post.findAll({
+        where: {
+          user_id: id,
+        },
+        attributes: ["post"],
+      });
+
+      if (!posts || posts.length === 0) {
+        return res.json({
+          msg: "Post not found or wrong post id.",
+        });
+      }
+
+      res.json(posts);
+    } catch (error) {
+      res.status(500).json({
+        msg: "Error with user id",
+      });
+    }
+  }
 }
 
 export default new PostController();
