@@ -80,7 +80,7 @@ class PostController {
       });
 
     //checks if user is updating own post or someone elses
-    if (user.id.toString() === post.user_id.toString()) {
+    if (user.id === post.user_id) {
       await post.update(
         {
           post: newPost,
@@ -94,6 +94,50 @@ class PostController {
       return res.json(newPost);
     } else {
       return res.json({ Error: "Cannot update another users post." });
+    }
+  }
+
+  async deletePost(req: any, res: any) {
+    try {
+      const postid = req.params.postid;
+      const userInformation = req.session;
+
+      //check for valid post id and prevents crash
+      const isValid = idIsValid(postid);
+      if (isValid) {
+        return res.status(422).json({ msg: isValid });
+      }
+
+      //finds user and post
+      const user = await User.findOne({
+        where: {
+          username: userInformation.username,
+        },
+      });
+      const thisPost = await Post.findByPk(postid);
+
+      //check if post exists and prevents crash from null
+      if (!thisPost || thisPost === null) {
+        throw new Error("Invalid post id");
+      }
+
+      //check if user is changing own post or someone elses
+      if (user.id !== thisPost.user_id) {
+        return res.json({
+          msg: "Access denied. Cannot delete other users post.",
+        });
+      }
+
+      //delete post if tests are passed
+      await thisPost.destroy();
+      res.status(200).json({
+        msg: "Post deleted successfully",
+      });
+    } catch (error) {
+      console.log(error);
+      return res.status(500).json({
+        msg: "Error! Most likely the problem is an invalid id!",
+      });
     }
   }
 }
