@@ -118,14 +118,13 @@ class UserController {
     }
 
     try {
-      //Generates token with user email
+      //Generates token with user email and username
       const secret = process.env.JWT_SECRET as string;
 
       const token = jwt.sign(
         {
           email: user.email,
           username: user.username,
-          // change this for email
         },
         secret
       );
@@ -158,11 +157,11 @@ class UserController {
     try {
       const secret = process.env.JWT_SECRET as string;
       //grab username from token passed through email
-      const usernameToken = jwt.verify(token, secret) as any;
+      const informationToken = jwt.verify(token, secret) as any;
 
       //compares username grabbed from inside the email of the user
       //with the username provided by the user in the time of password changing
-      if (username !== usernameToken.username) {
+      if (username !== informationToken.username) {
         return res.json({
           Error: "User not found!",
         });
@@ -177,7 +176,7 @@ class UserController {
         },
         {
           where: {
-            username: usernameToken.username,
+            username: informationToken.username,
           },
         }
       );
@@ -190,6 +189,33 @@ class UserController {
       return res.json({
         msg: "Invalid token",
       });
+    }
+  }
+
+  async userIndex(req: any, res: any) {
+    try {
+      //gets username from checkToken (req.session)
+      const information = req.session;
+
+      //finds user based on username from information token
+      //only shows the 'name' attribute
+      const user = await User.findOne({
+        where: {
+          username: information.username,
+        },
+        attributes: ["name"],
+      });
+
+      //check if users exists
+      if (!user || user === null) {
+        res.status(422).json({ User: "not found" });
+        return;
+      }
+
+      res.status(200).json(user);
+    } catch (error) {
+      console.log(error);
+      return res.status(404).json({ msg: "User not found!" });
     }
   }
 }
