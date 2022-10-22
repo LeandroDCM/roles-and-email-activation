@@ -28,6 +28,7 @@ class PostController {
       });
     }
 
+    //make new post and link it to the user
     const newPost = await Post.create({
       post: post,
       user_id: user.id,
@@ -35,6 +36,65 @@ class PostController {
 
     await newPost.save();
     return res.json(newPost.post);
+  }
+
+  async updatePost(req: any, res: any) {
+    const postid = req.params.postid;
+    const userInformation = req.session;
+    const { newPost } = req.body;
+
+    //check for valid post id and prevents crash
+    const isValid = idIsValid(postid);
+    if (isValid) {
+      return res.status(422).json({ msg: isValid });
+    }
+
+    //find user and post
+    const user = await User.findOne({
+      where: {
+        username: userInformation.username,
+      },
+    });
+
+    //find post by pk and only return post
+    const post = await Post.findByPk(postid, {
+      attribute: ["post"],
+    });
+
+    //check if user exists
+    if (!user)
+      return res.status(400).json({
+        msg: "User not found",
+      });
+
+    //check if post is empty/exists
+    if (post === null || !post)
+      return res.status(400).json({
+        msg: "Empty post id or non existent.",
+      });
+
+    //check if new post is empty/exists
+    if (!newPost)
+      return res.status(400).json({
+        msg: "Post can't be empty",
+      });
+
+    //checks if user is updating own post or someone elses
+    if (user.id.toString() === post.user_id.toString()) {
+      await post.update(
+        {
+          post: newPost,
+        },
+        {
+          where: {
+            user_id: user.id,
+          },
+        }
+      );
+      return res.json(newPost);
+    } else {
+      return res.json({ Error: "Cannot update another users post." });
+    }
   }
 }
 
