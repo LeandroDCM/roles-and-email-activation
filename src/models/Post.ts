@@ -12,7 +12,7 @@ class Post extends Model {
     );
   }
   static associate(models: any) {
-    this.belongsTo(models.User, { foreignKey: "user_id", as: "owner" });
+    this.belongsTo(models.User, { foreignKey: "user_id", as: "user" });
   }
 }
 

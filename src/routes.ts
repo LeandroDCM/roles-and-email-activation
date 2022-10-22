@@ -5,6 +5,7 @@ const routes = express.Router();
 //Controllers
 import UserController from "./controllers/UserController";
 import EmailController from "./controllers/EmailController";
+import PostController from "./controllers/PostController";
 
 // Public Routes ------------------------------------------
 routes.get("/", (req: any, res: any) => {
@@ -26,4 +27,9 @@ routes.patch("/auth/reset/:token", UserController.reset);
 //Private Route -------------------------------------------
 //function checkToken to check if token is authorized to access private route
 routes.get("/user/", checkToken, UserController.userIndex);
+
+// get/update/delete post route
+//
+//
+routes.post("/user/post", checkToken, PostController.makePost);
 export { routes };
