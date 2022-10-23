@@ -1,6 +1,7 @@
 import express from "express";
 import { routes } from "./routes";
-import "dotenv/config";
+//import "dotenv/config";
+require("dotenv").config(); //changed because of tons of glitches
 
 //get connections
 require("./database");
