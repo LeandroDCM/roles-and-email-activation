@@ -19,7 +19,7 @@ class PostController {
       where: {
         username: userInformation.username,
       },
-      attributes: ["id"],
+      attributes: ["id", "name"],
     });
 
     if (!user) {
@@ -32,6 +32,7 @@ class PostController {
     const newPost = await Post.create({
       post: post,
       user_id: user.id,
+      name: user.name,
     });
 
     await newPost.save();
@@ -144,7 +145,7 @@ class PostController {
   async postsIndex(req: any, res: any) {
     try {
       const posts = await Post.findAll({
-        attributes: ["post", "user_id"],
+        attributes: ["post", "name"],
       });
       res.json(posts);
     } catch (error) {
