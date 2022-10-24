@@ -174,6 +174,13 @@ class PostController {
           user_id: id,
         },
         attributes: ["post"],
+        include: [
+          {
+            //includes the name of the poster using association made in model Post
+            association: "owner",
+            attributes: ["name"],
+          },
+        ],
       });
 
       if (!posts || posts.length === 0) {
