@@ -5,7 +5,6 @@ class Post extends Model {
     super.init(
       {
         post: DataTypes.STRING,
-        name: DataTypes.STRING,
       },
       {
         sequelize,
@@ -13,7 +12,7 @@ class Post extends Model {
     );
   }
   static associate(models: any) {
-    this.belongsTo(models.User, { foreignKey: "user_id", as: "user" });
+    this.belongsTo(models.User, { foreignKey: "user_id", as: "owner" });
   }
 }
 

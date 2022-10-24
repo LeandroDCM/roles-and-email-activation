@@ -32,7 +32,6 @@ class PostController {
     const newPost = await Post.create({
       post: post,
       user_id: user.id,
-      name: user.name,
     });
 
     await newPost.save();
@@ -144,11 +143,13 @@ class PostController {
 
   async postsIndex(req: any, res: any) {
     try {
+      //gets only post
       const posts = await Post.findAll({
         attributes: ["post"],
         include: [
           {
-            association: "user",
+            //includes the name of the poster using association made in model Post
+            association: "owner",
             attributes: ["name"],
           },
         ],

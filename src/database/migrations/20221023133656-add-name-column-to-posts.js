@@ -10,9 +10,6 @@ module.exports = {
   },
 
   async down(queryInterface, Sequelize) {
-    return queryInterface.removeColumn("posts", "name", {
-      type: Sequelize.STRING,
-      allowNull: false,
-    });
+    return queryInterface.removeColumn("posts", "name", {});
   },
 };
