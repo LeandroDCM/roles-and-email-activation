@@ -219,6 +219,38 @@ class UserController {
       return res.status(404).json({ msg: "User not found!" });
     }
   }
+
+  async deleteUser(req: any, res: any) {
+    try {
+      const userId = req.params.id;
+      const userInformation = req.session;
+      //find logged user
+      const loggedUser = await User.findOne({
+        where: {
+          username: userInformation.username,
+        },
+      });
+
+      //find user to be deleted
+      const user = await User.findByPk(userId);
+      console.log(user);
+      //if user role_id === 3 "ADMIN" delete anything he wants
+      if (loggedUser.role_id === 3) {
+        //delete post if tests are passed
+        await user.destroy();
+        return res.status(200).json({
+          msg: "User deleted successfully",
+        });
+      } else {
+        throw new Error("Error!");
+      }
+    } catch (error) {
+      console.log(error);
+      return res
+        .status(404)
+        .json({ msg: "User not found or no permission to delete" });
+    }
+  }
 }
 
 export default new UserController();

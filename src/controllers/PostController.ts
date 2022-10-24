@@ -101,6 +101,7 @@ class PostController {
     try {
       const postid = req.params.postid;
       const userInformation = req.session;
+
       //check for valid post id and prevents crash
       const isValid = idIsValid(postid);
       if (isValid) {
