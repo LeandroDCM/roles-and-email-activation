@@ -8,8 +8,15 @@ class User extends Model {
           unique: true,
         },
         name: DataTypes.STRING,
-        email: DataTypes.STRING,
+        email: {
+          type: DataTypes.STRING,
+          unique: true,
+        },
         password: DataTypes.STRING,
+        role_id: {
+          type: DataTypes.INTEGER,
+          defaultValue: 1,
+        },
       },
       {
         sequelize,

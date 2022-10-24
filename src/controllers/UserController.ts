@@ -125,6 +125,7 @@ class UserController {
         {
           email: user.email,
           username: user.username,
+          role_id: user.role_id,
         },
         secret
       );

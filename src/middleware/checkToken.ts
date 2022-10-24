@@ -14,7 +14,7 @@ export default function checkToken(req: any, res: any, next: any) {
 
     //verifies the token and no errors are thrown
     const userInformation = jwt.verify(token, secret) as any;
-    //passes the email and username to req.session to know which user is logged
+    //passes the email/username/role_id to req.session to know which user is logged
     req.session = userInformation;
 
     next();
