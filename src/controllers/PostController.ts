@@ -145,7 +145,13 @@ class PostController {
   async postsIndex(req: any, res: any) {
     try {
       const posts = await Post.findAll({
-        attributes: ["post", "name"],
+        attributes: ["post"],
+        include: [
+          {
+            association: "user",
+            attributes: ["name"],
+          },
+        ],
       });
       res.json(posts);
     } catch (error) {
