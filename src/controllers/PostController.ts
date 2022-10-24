@@ -101,42 +101,68 @@ class PostController {
     try {
       const postid = req.params.postid;
       const userInformation = req.session;
-
       //check for valid post id and prevents crash
       const isValid = idIsValid(postid);
       if (isValid) {
         return res.status(422).json({ msg: isValid });
       }
 
-      //finds user and post
+      //finds user trying to delete and post
       const user = await User.findOne({
         where: {
           username: userInformation.username,
         },
       });
-      const thisPost = await Post.findByPk(postid);
+      //find the post from id in params and find out who posted by accessing owner.role_id
+      const thisPost = await Post.findByPk(postid, {
+        include: [
+          {
+            association: "owner",
+            attributes: ["role_id"],
+          },
+        ],
+      });
 
       //check if post exists and prevents crash from null
       if (!thisPost || thisPost === null) {
         throw new Error("Invalid post id");
       }
 
-      //check if user is changing own post or someone elses
-      if (user.id !== thisPost.user_id) {
-        return res.json({
-          msg: "Access denied. Cannot delete other users post.",
+      //if user role_id === 3 "ADMIN" delete anything he wants
+      if (user.role_id === 3) {
+        //delete post if tests are passed
+        await thisPost.destroy();
+        return res.status(200).json({
+          msg: "Post deleted successfully",
         });
       }
 
-      //delete post if tests are passed
-      await thisPost.destroy();
-      res.status(200).json({
-        msg: "Post deleted successfully",
-      });
+      //if user role_id === 2 "MODERATOR" delete anything but ADMIN posts
+      if (user.role_id === 2 && thisPost.owner.role_id !== 3) {
+        //delete post if tests are passed
+        await thisPost.destroy();
+        return res.status(200).json({
+          msg: "Post deleted successfully",
+        });
+      }
+
+      //if user role_id === 1 "USER" and this post was made by the same user
+      if (user.role_id === 1 && user.id === thisPost.user_id) {
+        //delete post if tests are passed
+        await thisPost.destroy();
+        return res.status(200).json({
+          msg: "Post deleted successfully",
+        });
+      }
+
+      //check if user is trying to do something he does not have permission to do
+      throw new Error(
+        "Access denied. You do not have permission to delete this post"
+      );
     } catch (error) {
       console.log(error);
       return res.status(500).json({
-        msg: "Error! Most likely the problem is an invalid id!",
+        msg: "Error! Access denied. You do not have permission to delete this post",
       });
     }
   }
@@ -150,7 +176,7 @@ class PostController {
           {
             //includes the name of the poster using association made in model Post
             association: "owner",
-            attributes: ["name"],
+            attributes: ["name", "role_id"],
           },
         ],
       });
