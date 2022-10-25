@@ -278,6 +278,40 @@ class UserController {
         .json({ msg: "User not found or no permission to delete" });
     }
   }
+
+  async activate(req: any, res: any) {
+    try {
+      const token = req.params.token;
+      const { activateButton } = req.body;
+
+      //decoding jwt token
+      const secret = process.env.JWT_SECRET as string;
+      const userInformation = jwt.verify(token, secret) as any;
+
+      //find user
+      const user = await User.findOne({
+        where: {
+          username: userInformation.username,
+        },
+      });
+
+      //checks if he clicks the fake button
+      if (activateButton === "ACTIVATE") {
+        await user.update({
+          is_activated: true,
+        });
+        return res.json({
+          msg: "User account activated!",
+        });
+      }
+      throw new Error("Something went wrong!");
+    } catch (error) {
+      console.log(error);
+      return res.json({
+        msg: "Something went wrong!",
+      });
+    }
+  }
 }
 
 export default new UserController();

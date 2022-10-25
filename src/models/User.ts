@@ -17,6 +17,7 @@ class User extends Model {
           type: DataTypes.INTEGER,
           defaultValue: 1,
         },
+        is_activated: DataTypes.BOOLEAN,
       },
       {
         sequelize,
