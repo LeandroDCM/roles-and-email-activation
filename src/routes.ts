@@ -22,7 +22,7 @@ routes.post("/auth/login", UserController.login);
 routes.put("/auth/recover", EmailController.recover);
 
 // Reset Password
-routes.patch("/auth/reset/:token", UserController.reset);
+routes.patch("/auth/reset/:token", UserController.resetPassword);
 
 //Activate Account
 routes.post("/auth/activate/:token", UserController.activate);

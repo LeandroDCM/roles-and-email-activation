@@ -169,7 +169,7 @@ class UserController {
     }
   }
 
-  async reset(req: any, res: any) {
+  async resetPassword(req: any, res: any) {
     const { newPassword, confirmNewPass, username } = req.body;
     //token came from recovery email
     const { token } = req.params;
