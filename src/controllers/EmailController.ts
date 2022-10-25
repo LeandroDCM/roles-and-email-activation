@@ -1,30 +1,17 @@
 import { User } from "../models/User";
-import nodemailer from "nodemailer";
 import jwt from "jsonwebtoken";
+import mailgun from "mailgun-js";
 import "dotenv/config";
 
-//mailtrap credentials
-let transport = nodemailer.createTransport({
-  host: "smtp.mailtrap.io",
-  port: 2525,
-  auth: {
-    user: process.env.EMAIL_USERNAME,
-    pass: process.env.EMAIL_PASS,
-  },
+const DOMAIN = process.env.EMAIL_DOMAIN as string;
+const mg = mailgun({
+  apiKey: process.env.EMAIL_API_KEY as string,
+  domain: DOMAIN,
 });
 
 class EmailController {
   async recover(req: any, res: any) {
     const { email } = req.body;
-
-    //checks if connection with mailtrap is happening
-    transport.verify(function (error, success) {
-      if (error) {
-        console.log(error);
-      } else {
-        console.log("Server is ready to take our messages");
-      }
-    });
 
     //check for user
     const user = await User.findOne({
@@ -45,16 +32,20 @@ class EmailController {
 
     const token = jwt.sign({ username: user.username }, secret);
 
-    const mailOptions = {
-      from: "07c7405dc0-27a88f@inbox.mailtrap.io", // Sender address
-      to: email, // List of recipients
-      subject: "Account password reset link", // Subject line
-      text: `Hello! click this link to reset your password`,
-      html: `<a href="http://localhost:3333/auth/reset/${token}">Recovery Link</a>`, // Plain text body
+    //Email data
+    const data = {
+      from: "Excited User <me@samples.mailgun.org>",
+      to: `${email}`,
+      subject: "Password Change",
+      text: `<a href="${process.env.CLIENT_URL}/auth/reset/${token}">Password Change Link</a>`,
+      html: `<a href="${process.env.CLIENT_URL}/auth/reset/${token}">Password Change</a>`,
     };
 
     try {
-      transport.sendMail(mailOptions);
+      //send email
+      mg.messages().send(data, function (error, body) {
+        console.log(body);
+      });
       res.json({
         msg: "Email sent with your information!",
       });
