@@ -4,7 +4,16 @@ import validPassword from "../utils/validPassword";
 import { Op } from "sequelize";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import mailgun from "mailgun-js";
 import "dotenv/config";
+
+//setting up mailgun
+const DOMAIN = process.env.EMAIL_DOMAIN as string;
+const mg = mailgun({
+  apiKey: process.env.EMAIL_API_KEY as string,
+  domain: DOMAIN,
+});
+
 class UserController {
   async register(req: any, res: any) {
     const { username, name, email, password, confirmPassword } = req.body;
@@ -59,6 +68,25 @@ class UserController {
     const passwordHash = await bcrypt.hash(password, salt);
 
     try {
+      //makes username a token to compare username at password reset link
+      const secret = process.env.JWT_SECRET as string;
+
+      const token = jwt.sign({ username: username }, secret);
+
+      //Email data
+      const data = {
+        from: "noreply@email.com",
+        to: `${email}`,
+        subject: "Activate Account",
+        text: `<a href="${process.env.CLIENT_URL}/auth/activate/${token}">Activation Link</a>`,
+        html: `<a href="${process.env.CLIENT_URL}/auth/activate/${token}">Activation Link</a>`,
+      };
+
+      //send email
+      mg.messages().send(data, function (error, body) {
+        console.log(body);
+      });
+
       //create user
       const user = await User.create({
         username: username,
@@ -68,7 +96,7 @@ class UserController {
       });
 
       res.status(201).json({
-        msg: "User created successfully",
+        msg: "User created successfully, Please confirm your Email to be able to make Posts",
       });
     } catch (error) {
       console.log(error);
@@ -233,7 +261,6 @@ class UserController {
 
       //find user to be deleted
       const user = await User.findByPk(userId);
-      console.log(user);
       //if user role_id === 3 "ADMIN" delete anything he wants
       if (loggedUser.role_id === 3) {
         //delete post if tests are passed

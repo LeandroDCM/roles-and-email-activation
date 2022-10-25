@@ -3,6 +3,7 @@ import jwt from "jsonwebtoken";
 import mailgun from "mailgun-js";
 import "dotenv/config";
 
+//setting up mailgun
 const DOMAIN = process.env.EMAIL_DOMAIN as string;
 const mg = mailgun({
   apiKey: process.env.EMAIL_API_KEY as string,
