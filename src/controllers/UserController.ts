@@ -282,6 +282,7 @@ class UserController {
   async activate(req: any, res: any) {
     try {
       const token = req.params.token;
+      //acts as a fake activate button
       const { activateButton } = req.body;
 
       //decoding jwt token

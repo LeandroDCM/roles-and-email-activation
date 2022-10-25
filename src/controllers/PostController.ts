@@ -19,23 +19,36 @@ class PostController {
       where: {
         username: userInformation.username,
       },
-      attributes: ["id", "name"],
+      attributes: ["id", "name", "is_activated", "role_id"], //grabs activation status and role id
     });
 
+    //checks if user exists
     if (!user) {
       return res.json({
         msg: "User not found",
       });
     }
 
-    //make new post and link it to the user
-    const newPost = await Post.create({
-      post: post,
-      user_id: user.id,
-    });
+    try {
+      //if user not activated he can't post but MODS AND ADMS CAN.
+      if (user.is_activated || user.role_id > 1) {
+        //make new post and link it to the user
+        const newPost = await Post.create({
+          post: post,
+          user_id: user.id,
+        });
 
-    await newPost.save();
-    return res.json(newPost.post);
+        await newPost.save();
+        return res.json(newPost.post);
+      } else {
+        throw new Error("Account not activated");
+      }
+    } catch (error) {
+      console.log(error);
+      return res.json({
+        msg: "Account not activated, please check your email.",
+      });
+    }
   }
 
   async updatePost(req: any, res: any) {
